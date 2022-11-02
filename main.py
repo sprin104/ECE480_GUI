@@ -1,6 +1,6 @@
 # importing various libraries
 import sys
-from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox
+from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox, QWidget, QLabel
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
@@ -14,6 +14,16 @@ FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
 Last_cord_x = [50.0]
 Last_cord_y = [50.0]
+
+
+class Setup(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Another Window % d" % randy.randint(0, 100))
+        layout.addWidget(self.label)
+        self.setLayout(layout)
+
 # main window
 # which inherits QDialog
 class Window(QDialog):
@@ -21,15 +31,14 @@ class Window(QDialog):
     # constructor
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
+        self.w = Setup()
         # a figure instance to plot on
 
         self.figure = plt.figure()
         # this is the Canvas Widget that
         # displays the 'figure'it takes the
-        #TODO look at below \/
-        '''
-        rightlayout blah blah blah
-        rlayout = QVBoxLayout()
+        #TODO right layout blah blah blah
+        '''        rlayout = QVBoxLayout()
         rlayout.setContentsMargins(1, 1, 1, 1)
         rlayout.addWidget(QLabel("Plot type:"))
         rlayout.addWidget(self.combo)
@@ -50,7 +59,7 @@ class Window(QDialog):
         self.dropdown.addItem("Sensor 2")
         self.button_config = QPushButton('add config file')
         # Just some radios man
-        self.radio = QRadioButton("enable trakers")
+        self.radio = QRadioButton("enable trackers")
 
         # adding action to the button
         self.button.clicked.connect(self.plot)
@@ -64,7 +73,7 @@ class Window(QDialog):
 
         # adding push button to the layout
         layout.addWidget(self.button)
-        layout.move(1000, 32)
+
         layout.addWidget(self.button_config)
         layout.addWidget(self.dropdown)
         
