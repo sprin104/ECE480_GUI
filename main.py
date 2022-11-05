@@ -1,6 +1,8 @@
 # importing various libraries
 import sys
-from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox, QWidget, QLabel
+from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox, QWidget, QLabel, \
+    QLineEdit
+from PyQt5.uic.properties import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
@@ -16,13 +18,46 @@ Last_cord_x = [50.0]
 Last_cord_y = [50.0]
 
 
-class Setup(QWidget):
-    def __init__(self):
-        super().__init__()
+class Setup(QDialog):
+    def __init__(self, parent=None):
+        super(Setup, self).__init__(parent)
+        self.title = "setup Page"
+        self.buttonvon = QPushButton('Continue')
+        self.dropdown = QComboBox(self)
+        self.dropdown.addItem("N")
+        self.dropdown.addItem("E")
+        self.dropdown.addItem("S")
+        self.dropdown.addItem("W")
+        self.textbox = QLineEdit(self)
+        self.label2 = QLabel("Sensor 1 Orientation")
+        self.label = QLabel("Sensor 2 Orientation")
+        self.dropdown2 = QComboBox(self)
+        self.dropdown2.addItem("N")
+        self.dropdown2.addItem("E")
+        self.dropdown2.addItem("S")
+        self.dropdown2.addItem("W")
+
+        self.buttonvon.clicked.connect(self.on_click)
+        self.setGeometry(10, 10, 800, 480)
+
         layout = QVBoxLayout()
-        self.label = QLabel("Another Window % d" % randy.randint(0, 100))
+        layout.addWidget(self.textbox)
+        layout.addWidget(self.buttonvon)
+        layout.addWidget(self.label2)
+        layout.addWidget(self.dropdown)
         layout.addWidget(self.label)
+        layout.addWidget(self.dropdown2)
+
         self.setLayout(layout)
+
+    def on_click(self):
+        a =1
+        self.w = Window()
+        self.w.show()
+
+
+        #self.dialog.show()
+
 
 # main window
 # which inherits QDialog
@@ -113,7 +148,7 @@ if __name__ == '__main__':
     # creating apyqt5 application
     app = QApplication(sys.argv)
     # creating a window object
-    main = Window()
+    main = Setup()
     # showing the window
     main.show()
     # loop
