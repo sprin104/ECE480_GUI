@@ -2,7 +2,8 @@
 import sys
 from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox, QWidget, QLabel, \
     QLineEdit
-from PyQt5.uic.properties import QtCore
+from pyqtgraph import PlotWidget, plot
+import pyqtgraph as pg
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
@@ -16,6 +17,14 @@ FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
 Last_cord_x = [50.0]
 Last_cord_y = [50.0]
+
+import socket
+import threading
+import time
+import pickle
+import numpy
+import matplotlib.pyplot as plt
+from multiprocessing import Process
 
 
 class Setup(QDialog):
@@ -143,9 +152,11 @@ class Window(QDialog):
         # refresh canvas
             self.canvas.draw()
 
+
 # driver code
 if __name__ == '__main__':
     # creating apyqt5 application
+
     app = QApplication(sys.argv)
     # creating a window object
     main = Setup()
