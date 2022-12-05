@@ -1,5 +1,7 @@
 # importing various libraries
 import sys
+
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout, QRadioButton, QComboBox, QWidget, QLabel, \
     QLineEdit
 from pyqtgraph import PlotWidget, plot
@@ -11,7 +13,7 @@ import matplotlib.animation as anime
 import random as randy
 import os
 import subprocess
-
+import server
 
 FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
@@ -60,12 +62,11 @@ class Setup(QDialog):
         self.setLayout(layout)
 
     def on_click(self):
-        a =1
+        a = 1
         self.w = Window()
         self.w.show()
 
-
-        #self.dialog.show()
+        # self.dialog.show()
 
 
 # main window
@@ -78,82 +79,59 @@ class Window(QDialog):
         self.w = Setup()
         # a figure instance to plot on
 
-        self.figure = plt.figure()
+        self.graphWidget = pg.PlotWidget()
+        self.graphWidget.setXRange(0, 11)
+        self.graphWidget.setYRange(0, 6)
 
-        # 'figure' instance as a parameter to __init__
-        #TODO Figure(figsize=(x,y))
-        #self.figure = Figure(fig)
-        self.canvas = FigureCanvas(self.figure)
+        self.pen1 = pg.mkPen(color=(255, 0,0), width=2)
+        self.pen2 = pg.mkPen(color=(0, 255,0), width=2)
 
-        # this is the Navigation widget
-        # it takes the Canvas widget and a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        # Just some buttons
-        self.button = QPushButton('show track')
-        self.dropdown = QComboBox(self)
-        self.dropdown.addItem("Sensor 1")
-        self.dropdown.addItem("Sensor 2")
-        self.button_config = QPushButton('add config file')
-        # Just some radios man
-        self.radio = QRadioButton("enable trackers")
-        # adding action to the button
-        #self.button.clicked.connect(self.plot)
-        self.button_config.clicked.connect(self.configfile)
-        # creating a Vertical Box layout
+        self.x = [1]
+        self.y = [1]
+
+        t1 = threading.Thread(target=server.startserver)
+        t1.start()
+
+
         layout = QVBoxLayout()
-        # adding tool bar to the layout
-        layout.addWidget(self.toolbar)
-        # adding canvas to the layout
-        layout.addWidget(self.canvas)
 
-        # adding push button to the layout
-        layout.addWidget(self.button)
-
-        layout.addWidget(self.button_config)
-        layout.addWidget(self.dropdown)
-        
-        layout.addWidget(self.radio)
-
-        # setting layout to the main window
         self.setLayout(layout)
 
-        t = threading.Thread(target=self.plot)
-        t.start()
+        layout.addWidget(self.graphWidget)
 
+        self.date_line1 = self.graphWidget.plot()
+        self.date_line2 = self.graphWidget.plot()
 
+        x = True
+
+        while x:
+            x = server.sufficient_data()
+
+        self.timer = QTimer()
+        self.timer.setInterval(50)
+        self.timer.timeout.connect(self.update_stuff)
+
+        self.timer.start()
+
+    def update_stuff(self):
+
+        x, y, x2, y2 = server.BIGDATA()
+        x1, y1, x2_2, y2_2 = server.BIGDATA2()
+
+        if len(x1) >= 10:
+            self.date_line1.setData(x1[-9:-1], y1[-9:-1], pen=self.pen1)
+
+        if len(x) >= 10:
+            self.date_line1.setData(x[-9:-1], y[-9:-1], pen=self.pen1)
+
+        if len(x2) >= 20:
+            #TODO chage back to 10
+            self.date_line2.setData(x2[-9:-1], y2[-9:-1], pen=self.pen2)
     # action called by the push button
 
-    def configfile(self):
-        path = os.path.normpath('')
-
-        if os.path.isdir(path):
-            subprocess.run([FILEBROWSER_PATH, path])
-        elif os.path.isfile(path):
-            subprocess.run([FILEBROWSER_PATH, '/select,', os.path.normpath(path)])
-
-    def plot(self):
-        # random data
-        while True:
-            for i in range(25):
-
-                x = randy.randint(-4, 5)
-                y = randy.randint(-4, 5)
-                Last_cord_x.append(Last_cord_x[-1] + (x / 2))
-                Last_cord_y.append(Last_cord_y[-1] + (y / 2))
-            # clearing old figure
-                self.figure.clear()
-            # create an axis
-                #ax = self.figure.add_subplot(111)
-                plt.xlim(40, 60)
-                plt.ylim(40, 60)
-            # plot data
-                plt.plot(Last_cord_x, Last_cord_y, '*-')
-            # refresh canvas
-                self.canvas.draw()
 
 
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
     # creating a window object
     main = Setup()
