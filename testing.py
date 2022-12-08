@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anime
 import random as randy
 import os
-import subprocess
 import server
 
 FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
@@ -28,7 +27,7 @@ import numpy
 import matplotlib.pyplot as plt
 from multiprocessing import Process
 
-
+'''
 class Setup(QDialog):
     def __init__(self, parent=None):
         super(Setup, self).__init__(parent)
@@ -67,7 +66,7 @@ class Setup(QDialog):
         self.w.show()
 
         # self.dialog.show()
-
+'''
 
 # main window
 # which inherits QDialog
@@ -76,15 +75,18 @@ class Window(QDialog):
     # constructor
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
-        self.w = Setup()
+        #self.w = Setup()
+        #todo check this out ^
         # a figure instance to plot on
 
         self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setXRange(0, 11)
-        self.graphWidget.setYRange(0, 6)
+        self.graphWidget.setXRange(0, 15, padding=0)
+        self.graphWidget.setYRange(0, 6, padding=0)
 
         self.pen1 = pg.mkPen(color=(255, 0,0), width=2)
         self.pen2 = pg.mkPen(color=(0, 255,0), width=2)
+        self.pen3 = pg.mkPen(color=(255, 0, 255), width=2)
+        self.pen4 = pg.mkPen(color=(0, 255, 255), width=2)
 
         self.x = [1]
         self.y = [1]
@@ -101,14 +103,21 @@ class Window(QDialog):
 
         self.date_line1 = self.graphWidget.plot()
         self.date_line2 = self.graphWidget.plot()
+        self.date_line3 = self.graphWidget.plot()
 
         x = True
 
         while x:
             x = server.sufficient_data()
+            if x == False:
+                break
+            y = server.sufficient_data2()
+            if y == False:
+                break
 
         self.timer = QTimer()
-        self.timer.setInterval(50)
+        self.timer.setInterval(5)
+
         self.timer.timeout.connect(self.update_stuff)
 
         self.timer.start()
@@ -116,17 +125,59 @@ class Window(QDialog):
     def update_stuff(self):
 
         x, y, x2, y2 = server.BIGDATA()
-        x1, y1, x2_2, y2_2 = server.BIGDATA2()
+        x2_1, y2_1, x2_2, y2_2 = server.BIGDATA2()
+        fakerx = [-3, -2]
+        fakery = [-3, -2]
 
-        if len(x1) >= 10:
-            self.date_line1.setData(x1[-9:-1], y1[-9:-1], pen=self.pen1)
+        a = x2_1  # [-9:-1]
+        b = y2_1  # [-9:-1]
+        two_sensors = False
 
-        if len(x) >= 10:
-            self.date_line1.setData(x[-9:-1], y[-9:-1], pen=self.pen1)
+        if x[-1] > 3 and x2_1[-1] < 6:
+            two_sensors = True
+            a = x[-9:-1]
+            b = x2_1[-9:-1]
+            c = y[-9:-1]
+            d = y2_1[-9:-1]
+            #print(len(a), len(b))
+            totalx = 0
+            totaly = 0
+            for i in range(8):
+                temp = b[i] - a[i]
+                totalx += temp
+                temp = d[i] - c[i]
+                totaly += temp
 
-        if len(x2) >= 20:
-            #TODO chage back to 10
-            self.date_line2.setData(x2[-9:-1], y2[-9:-1], pen=self.pen2)
+            avg1 = round(totalx/7, 2)
+            avg2 = round(totaly/7, 2)
+            new_listx = []
+            new_listy = []
+            for i in range(8):
+                new_listx.append(b[i]-avg1)
+                new_listy.append(d[i]-avg2)
+            print(len(new_listx[-8:-1]), len(new_listy[-8:-1]))
+
+            self.date_line3.setData(new_listx[-9:-1], new_listy[-8:-1], pen=self.pen2)
+            self.date_line1.clear()
+            self.date_line2.clear()
+
+
+
+
+        #elif len(new_list) == 8:
+        #    self.date_line1.setData(new_list[-9:-1], y2_1[-9:-1], pen=self.pen1)
+        a1 = x#[-9:-1]
+        b1 = y#[-9:-1]
+        if two_sensors == False:
+            self.date_line1.setData(x[-8:-1], y[-8:-1], pen=self.pen2)
+            self.date_line2.setData(x2_1[-8:-1], y2_1[-8:-1], pen=self.pen2)
+            self.date_line3.clear()
+        print(x[-9:-1])
+
+
+
+
+
     # action called by the push button
 
 
@@ -134,7 +185,7 @@ class Window(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # creating a window object
-    main = Setup()
+    main = Window()
     # showing the window
     main.show()
     # loop
