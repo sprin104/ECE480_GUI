@@ -41,28 +41,29 @@ def BIGDATA2():
     x_data2 = []
     y_data2 = []
 
-    '''if len(sensor2_list) >= 19:
-        del sensor2_list[0:10]'''
+
 
     for i in data:
         if isinstance(i, list):
 
 
             if i[0] == 0:
-                x = i[1]+6
-                y = i[2]+3
+                x = i[1]+5
+                y = i[2]+1.5
                 #print(x)
                 #print(y)
-                x_data1.append(round(x, 2))
-                y_data1.append(round(y, 2))
+                x_data1.append(round(x, 4))
+                y_data1.append(round(y, 4))
 
 
 
             if i[0] == 1:
-                x = i[1]
-                y = i[2]
-                x_data2.append(round(x + 8, 2))
-                y_data2.append(round(y + 3, 2))
+                x = i[1]+8
+                y = i[2]+1.5
+                x_data2.append(round(x, 4))
+                y_data2.append(round(y, 4))
+    if len(x_data1) >= 20:
+        del(x_data1[0:9])
 
     return x_data1, y_data1, x_data2, y_data2
 
@@ -77,18 +78,17 @@ def BIGDATA():
     x_data2 = []
     y_data2 = []
 
-    #if len(sensor1_list) > 50:
-     #   del sensor1_list[0:10]
+
     #clean_data("sen1")
 
     for i in data:
         if isinstance(i, list):
 
             if i[0] == 0:
-                x = i[1]
-                y = i[2]
-                x_data1.append(round(x + 3, 2))
-                y_data1.append(round(y + 3, 2))
+                x = i[1]+2.5
+                y = i[2]+1.5
+                x_data1.append(round(x, 2))
+                y_data1.append(round(y, 2))
 
             if i[0] == 1:
                 pass
@@ -98,6 +98,8 @@ def BIGDATA():
                 x_data2.append(round(x + 3, 2))
                 y_data2.append(round(y + 3, 2))
                 '''
+    if len(x_data1) >= 20:
+        del(x_data1[0:9])
     return x_data1, y_data1 , x_data2, y_data2
 
 

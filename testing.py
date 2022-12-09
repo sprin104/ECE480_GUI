@@ -80,7 +80,7 @@ class Window(QDialog):
         # a figure instance to plot on
 
         self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setXRange(0, 15, padding=0)
+        self.graphWidget.setXRange(0, 9, padding=0)
         self.graphWidget.setYRange(0, 6, padding=0)
 
         self.pen1 = pg.mkPen(color=(255, 0,0), width=2)
@@ -133,7 +133,7 @@ class Window(QDialog):
         b = y2_1  # [-9:-1]
         two_sensors = False
 
-        if x[-1] > 3 and x2_1[-1] < 6:
+        if x[-1] > 2 and x2_1[-1] < 5.5:
             two_sensors = True
             a = x[-9:-1]
             b = x2_1[-9:-1]
@@ -148,31 +148,29 @@ class Window(QDialog):
                 temp = d[i] - c[i]
                 totaly += temp
 
-            avg1 = round(totalx/7, 2)
-            avg2 = round(totaly/7, 2)
+            avg1 = round(totalx/8, 2)
+            avg2 = round(totaly/8, 2)
             new_listx = []
             new_listy = []
             for i in range(8):
                 new_listx.append(b[i]-avg1)
                 new_listy.append(d[i]-avg2)
-            print(len(new_listx[-8:-1]), len(new_listy[-8:-1]))
 
-            self.date_line3.setData(new_listx[-9:-1], new_listy[-8:-1], pen=self.pen2)
             self.date_line1.clear()
             self.date_line2.clear()
+            self.date_line3.setData(new_listx[-9:-1], new_listy[-9:-1], pen=self.pen2)
 
 
 
 
-        #elif len(new_list) == 8:
-        #    self.date_line1.setData(new_list[-9:-1], y2_1[-9:-1], pen=self.pen1)
-        a1 = x#[-9:-1]
-        b1 = y#[-9:-1]
-        if two_sensors == False:
+
+
+        else:
+            self.date_line3.clear()
             self.date_line1.setData(x[-8:-1], y[-8:-1], pen=self.pen2)
             self.date_line2.setData(x2_1[-8:-1], y2_1[-8:-1], pen=self.pen2)
-            self.date_line3.clear()
-        print(x[-9:-1])
+
+        #print(x[-9:-1])
 
 
 
